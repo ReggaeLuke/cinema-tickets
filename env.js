@@ -1,0 +1,19 @@
+const {
+  MAX_NUM_OF_TICKETS,
+  ADULT_TICKET_PRICE,
+  CHILD_TICKET_PRICE,
+  INFANT_TICKET_PRICE,
+} = process.env;
+
+export const MAX_NUMBER_OF_TICKETS = MAX_NUM_OF_TICKETS
+  ? parseInt(MAX_NUM_OF_TICKETS)
+  : 20;
+export const ADULT_PRICE = ADULT_TICKET_PRICE
+  ? parseFloat(ADULT_TICKET_PRICE)
+  : 20;
+export const CHILD_PRICE = CHILD_TICKET_PRICE
+  ? parseFloat(CHILD_TICKET_PRICE)
+  : 10;
+export const INFANT_PRICE = INFANT_TICKET_PRICE
+  ? parseFloat(INFANT_TICKET_PRICE)
+  : 0;
