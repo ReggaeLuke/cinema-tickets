@@ -26,19 +26,54 @@ const setupMocks = () => {
 
 describe('TicketService', () => {
   describe('when there are no adult tickets being purchased', () => {
-    it('throws an InvalidPurchaseException', () => {
-      const ticketService = new TicketService();
-      const ticketTypeRequests = [
-        new TicketTypeRequest(ticketTypeNames.INFANT, 1),
-        new TicketTypeRequest(ticketTypeNames.CHILD, 2),
-      ];
+    const infantsOnly = [new TicketTypeRequest(ticketTypeNames.INFANT, 5)];
+    const childrenOnly = [new TicketTypeRequest(ticketTypeNames.CHILD, 5)];
+    const infantsAndChildren = [
+      new TicketTypeRequest(ticketTypeNames.INFANT, 5),
+      new TicketTypeRequest(ticketTypeNames.CHILD, 5),
+    ];
 
-      expect(ticketTypeRequests.length).toBe(2);
+    it.each([[infantsOnly], [childrenOnly], [infantsAndChildren]])(
+      'throws an InvalidPurchaseException',
+      (ticketTypeRequests) => {
+        const ticketService = new TicketService();
+
+        expect(() =>
+          ticketService.purchaseTickets(accountId, ...ticketTypeRequests)
+        ).toThrowError(
+          'At least 1 adult ticket must be purchased for each transaction'
+        );
+      }
+    );
+  });
+
+  describe('when more than the max allowed tickets are being purchased', () => {
+    const adultsOnly = [new TicketTypeRequest(ticketTypeNames.ADULT, 22)];
+    const adultsAndChildren = [
+      new TicketTypeRequest(ticketTypeNames.ADULT, 10),
+      new TicketTypeRequest(ticketTypeNames.CHILD, 20),
+    ];
+    const adultsAndInfants = [
+      new TicketTypeRequest(ticketTypeNames.ADULT, 11),
+      new TicketTypeRequest(ticketTypeNames.INFANT, 10),
+    ];
+    const adultsChildrenAndInfants = [
+      new TicketTypeRequest(ticketTypeNames.ADULT, 10),
+      new TicketTypeRequest(ticketTypeNames.CHILD, 10),
+      new TicketTypeRequest(ticketTypeNames.INFANT, 10),
+    ];
+    it.each([
+      [adultsOnly],
+      [adultsAndChildren],
+      [adultsAndInfants],
+      [adultsChildrenAndInfants],
+    ])('throws an InvalidPurchaseException', (ticketTypeRequests) => {
+      const ticketService = new TicketService();
 
       expect(() =>
         ticketService.purchaseTickets(accountId, ...ticketTypeRequests)
       ).toThrowError(
-        'At least 1 adult ticket must be purchased for each transaction'
+        `A maximum of ${MAX_NUMBER_OF_TICKETS} tickets can be purchased per transaction`
       );
     });
   });
@@ -59,34 +94,48 @@ describe('TicketService', () => {
     });
   });
 
-  describe('when more than the max allowed tickets are being purchased', () => {
-    it('throws an InvalidPurchaseException', () => {
-      const ticketService = new TicketService();
-      const ticketTypeRequests = [
-        new TicketTypeRequest(ticketTypeNames.INFANT, 10),
-        new TicketTypeRequest(ticketTypeNames.ADULT, 10),
-        new TicketTypeRequest(ticketTypeNames.CHILD, 10),
-      ];
-
-      expect(() =>
-        ticketService.purchaseTickets(accountId, ...ticketTypeRequests)
-      ).toThrowError(
-        `A maximum of ${MAX_NUMBER_OF_TICKETS} tickets can be purchased per transaction`
-      );
-    });
-  });
-
   describe('when the purchase is valid', () => {
-    it('makes a payment and reserves a seat', () => {
+    const adultsOnly = [new TicketTypeRequest(ticketTypeNames.ADULT, 2)];
+    const adultsAndChildren = [
+      new TicketTypeRequest(ticketTypeNames.ADULT, 2),
+      new TicketTypeRequest(ticketTypeNames.CHILD, 3),
+    ];
+    const adultsAndInfants = [
+      new TicketTypeRequest(ticketTypeNames.ADULT, 2),
+      new TicketTypeRequest(ticketTypeNames.INFANT, 2),
+    ];
+    const adultsChildrenAndInfants = [
+      new TicketTypeRequest(ticketTypeNames.ADULT, 2),
+      new TicketTypeRequest(ticketTypeNames.CHILD, 3),
+      new TicketTypeRequest(ticketTypeNames.INFANT, 1),
+    ];
+    it.each([
+      [adultsOnly],
+      [adultsAndChildren],
+      [adultsAndInfants],
+      [adultsChildrenAndInfants],
+    ])('makes the payment and reserves the seats', (ticketTypeRequests) => {
+      let totalChildren = 0;
       const ticketService = new TicketService();
-      const totalInfants = 1;
-      const totalAdults = 2;
-      const totalChildren = 3;
-      const ticketTypeRequests = [
-        new TicketTypeRequest(ticketTypeNames.INFANT, totalInfants),
-        new TicketTypeRequest(ticketTypeNames.ADULT, totalAdults),
-        new TicketTypeRequest(ticketTypeNames.CHILD, totalChildren),
-      ];
+      const totalAdults = ticketTypeRequests
+        .find(
+          (ticketTypeRequest) =>
+            ticketTypeRequest.getTicketType() === ticketTypeNames.ADULT
+        )
+        .getNoOfTickets();
+
+      if (
+        ticketTypeRequests.some(
+          (f) => f.getTicketType() === ticketTypeNames.CHILD
+        )
+      ) {
+        totalChildren = ticketTypeRequests
+          .find(
+            (ticketTypeRequest) =>
+              ticketTypeRequest.getTicketType() === ticketTypeNames.CHILD
+          )
+          .getNoOfTickets();
+      }
 
       const totalToPay =
         ADULT_PRICE * totalAdults + CHILD_PRICE * totalChildren;

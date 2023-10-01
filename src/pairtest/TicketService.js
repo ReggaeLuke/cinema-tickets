@@ -21,7 +21,15 @@ export default class TicketService {
     );
   }
 
-  #hasSameNumberOfAdultsAndInfants(ticketTypeRequests) {
+  #getTotalTickets(ticketTypeRequests) {
+    return ticketTypeRequests.reduce(
+      (totalTickets, ticketTypeRequest) =>
+        totalTickets + ticketTypeRequest.getNoOfTickets(),
+      0
+    );
+  }
+
+  #hasSameOrGreaterNumberOfAdultsThanInfants(ticketTypeRequests) {
     const adults = ticketTypeRequests.find(
       (ticketTypeRequest) =>
         ticketTypeRequest.getTicketType() === ticketTypeNames.ADULT
@@ -32,15 +40,9 @@ export default class TicketService {
         ticketTypeRequest.getTicketType() === ticketTypeNames.INFANT
     );
 
-    return adults.getNoOfTickets() >= infants.getNoOfTickets();
-  }
+    if (!infants) return true;
 
-  #getTotalTickets(ticketTypeRequests) {
-    return ticketTypeRequests.reduce(
-      (totalTickets, ticketTypeRequest) =>
-        totalTickets + ticketTypeRequest.getNoOfTickets(),
-      0
-    );
+    return adults.getNoOfTickets() >= infants.getNoOfTickets();
   }
 
   #getTotalPrice(ticketTypeRequests) {
@@ -68,15 +70,15 @@ export default class TicketService {
       );
     }
 
-    if (!this.#hasSameNumberOfAdultsAndInfants(ticketTypeRequests)) {
-      throw new InvalidPurchaseException(
-        'The number of infant tickets must be the same or less than the number of adult tickets'
-      );
-    }
-
     if (this.#getTotalTickets(ticketTypeRequests) > MAX_NUMBER_OF_TICKETS) {
       throw new InvalidPurchaseException(
         `A maximum of ${MAX_NUMBER_OF_TICKETS} tickets can be purchased per transaction`
+      );
+    }
+
+    if (!this.#hasSameOrGreaterNumberOfAdultsThanInfants(ticketTypeRequests)) {
+      throw new InvalidPurchaseException(
+        'The number of infant tickets must be the same or less than the number of adult tickets'
       );
     }
 
@@ -85,7 +87,6 @@ export default class TicketService {
 
     const totalSeatReservations =
       this.#getTotalSeatReservations(ticketTypeRequests);
-    console.log('totalSeatReservations', totalSeatReservations);
     this.#seatReservationService.reserveSeat(accountId, totalSeatReservations);
   }
 }
