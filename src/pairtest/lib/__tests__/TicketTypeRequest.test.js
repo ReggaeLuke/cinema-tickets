@@ -12,6 +12,9 @@ describe('TicketTypeRequest', () => {
       ['Adult'],
       ['Child'],
       ['Infant'],
+      ['adult'],
+      ['child'],
+      ['infant'],
     ])(
       'should throw a TypeError if the type is not a valid ticket type',
       (ticketType) => {

@@ -34,7 +34,7 @@ export default class TicketTypeRequest {
     this.#type = type;
     this.#noOfTickets = noOfTickets;
 
-    // Make the object immutable.
+    // Makes the object immutable.
     Object.freeze(this);
   }
 
