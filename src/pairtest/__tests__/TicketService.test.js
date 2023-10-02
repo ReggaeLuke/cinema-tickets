@@ -137,8 +137,11 @@ describe('TicketService', () => {
           .getNoOfTickets();
       }
 
+      // Calculate the total to pay
       const totalToPay =
         ADULT_PRICE * totalAdults + CHILD_PRICE * totalChildren;
+
+      // Calculate the total seat reservations
       const totalSeatReservations = totalAdults + totalChildren;
 
       const { mockMakePayment, mockReserveSeat } = setupMocks();

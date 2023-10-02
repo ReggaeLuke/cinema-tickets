@@ -12,6 +12,7 @@ export default class TicketService {
     this.#seatReservationService = seatReservationService;
   }
 
+  // Check an adult ticket is being purchased
   #isAdultTicketBeingPurchased(ticketTypeRequests) {
     return ticketTypeRequests.some(
       (ticketTypeRequest) =>
@@ -19,6 +20,7 @@ export default class TicketService {
     );
   }
 
+  // Get the total number of tickets requested for purchase
   #getTotalTickets(ticketTypeRequests) {
     return ticketTypeRequests.reduce(
       (totalTickets, ticketTypeRequest) =>
@@ -27,6 +29,7 @@ export default class TicketService {
     );
   }
 
+  // Check the number of adult tickets is greater than or equal to the number of infant tickets
   #hasSameOrGreaterNumberOfAdultsThanInfants(ticketTypeRequests) {
     const adults = ticketTypeRequests.find(
       (ticketTypeRequest) =>
@@ -43,6 +46,7 @@ export default class TicketService {
     return adults.getNoOfTickets() >= infants.getNoOfTickets();
   }
 
+  // Get the total price of all tickets requested for purchase
   #getTotalPrice(ticketTypeRequests) {
     return ticketTypeRequests.reduce(
       (totalPrice, ticketTypeRequest) =>
@@ -51,6 +55,7 @@ export default class TicketService {
     );
   }
 
+  // Get the total number of seat reservations requested for purchase
   #getTotalSeatReservations(ticketTypeRequests) {
     return ticketTypeRequests
       .filter((f) => f.getTicketType() != ticketTypeNames.INFANT)
