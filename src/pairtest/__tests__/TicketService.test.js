@@ -6,8 +6,6 @@ import ticketTypeNames from '../consts/ticketTypeNames';
 import TicketPaymentService from '../../thirdparty/paymentgateway/TicketPaymentService';
 import SeatReservationService from '../../thirdparty/seatbooking/SeatReservationService';
 
-const accountId = 1;
-
 const setupMocks = () => {
   const mockMakePayment = jest.spyOn(
     TicketPaymentService.prototype,
@@ -25,6 +23,14 @@ const setupMocks = () => {
 };
 
 describe('TicketService', () => {
+  const accountId = 1;
+  const ticketPaymentService = new TicketPaymentService();
+  const seatReservationService = new SeatReservationService();
+  const ticketService = new TicketService(
+    ticketPaymentService,
+    seatReservationService
+  );
+
   describe('when there are no adult tickets being purchased', () => {
     const infantsOnly = [new TicketTypeRequest(ticketTypeNames.INFANT, 5)];
     const childrenOnly = [new TicketTypeRequest(ticketTypeNames.CHILD, 5)];
@@ -36,8 +42,6 @@ describe('TicketService', () => {
     it.each([[infantsOnly], [childrenOnly], [infantsAndChildren]])(
       'throws an InvalidPurchaseException',
       (ticketTypeRequests) => {
-        const ticketService = new TicketService();
-
         expect(() =>
           ticketService.purchaseTickets(accountId, ...ticketTypeRequests)
         ).toThrowError(
@@ -68,8 +72,6 @@ describe('TicketService', () => {
       [adultsAndInfants],
       [adultsChildrenAndInfants],
     ])('throws an InvalidPurchaseException', (ticketTypeRequests) => {
-      const ticketService = new TicketService();
-
       expect(() =>
         ticketService.purchaseTickets(accountId, ...ticketTypeRequests)
       ).toThrowError(
@@ -80,7 +82,6 @@ describe('TicketService', () => {
 
   describe('when there are more infant tickets than adult tickets being purchased', () => {
     it('throws an InvalidPurchaseException', () => {
-      const ticketService = new TicketService();
       const ticketTypeRequests = [
         new TicketTypeRequest(ticketTypeNames.INFANT, 2),
         new TicketTypeRequest(ticketTypeNames.ADULT, 1),
@@ -116,7 +117,6 @@ describe('TicketService', () => {
       [adultsChildrenAndInfants],
     ])('makes the payment and reserves the seats', (ticketTypeRequests) => {
       let totalChildren = 0;
-      const ticketService = new TicketService();
       const totalAdults = ticketTypeRequests
         .find(
           (ticketTypeRequest) =>
