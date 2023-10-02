@@ -31,6 +31,18 @@ describe('TicketService', () => {
     seatReservationService
   );
 
+  describe('when the account id is less than 1', () => {
+    const adultTicket = [new TicketTypeRequest(ticketTypeNames.ADULT, 1)];
+    it.each([
+      [0, adultTicket],
+      [-1, adultTicket],
+    ])('throws an Error', (accountId, ticketTypeRequests) => {
+      expect(() =>
+        ticketService.purchaseTickets(accountId, ...ticketTypeRequests)
+      ).toThrowError('Invalid account Id');
+    });
+  });
+
   describe('when there are no adult tickets being purchased', () => {
     const infantsOnly = [new TicketTypeRequest(ticketTypeNames.INFANT, 5)];
     const childrenOnly = [new TicketTypeRequest(ticketTypeNames.CHILD, 5)];

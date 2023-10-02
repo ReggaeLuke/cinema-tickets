@@ -36,11 +36,11 @@ describe('TicketTypeRequest', () => {
     });
 
     it.each([[-1], [0]])(
-      'should throw a TypeError if the noOfTickets is less than 1',
+      'should throw an Error if the noOfTickets is less than 1',
       (numOfTickets) => {
         expect(
           () => new TicketTypeRequest(ticketTypeNames.ADULT, numOfTickets)
-        ).toThrow(new TypeError('noOfTickets must be greater than 0'));
+        ).toThrow(new Error('noOfTickets must be greater than 0'));
       }
     );
   });

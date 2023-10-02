@@ -25,7 +25,7 @@ export default class TicketTypeRequest {
     }
 
     if (noOfTickets < 1) {
-      throw new TypeError('noOfTickets must be greater than 0');
+      throw new Error('noOfTickets must be greater than 0');
     }
 
     this.#price = ticketTypes.find(

@@ -67,6 +67,10 @@ export default class TicketService {
   }
 
   purchaseTickets(accountId, ...ticketTypeRequests) {
+    if (accountId < 1) {
+      throw new TypeError('Invalid account Id');
+    }
+
     if (!this.#isAdultTicketBeingPurchased(ticketTypeRequests)) {
       throw new InvalidPurchaseException(
         'At least 1 adult ticket must be purchased for each transaction'
