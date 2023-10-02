@@ -51,7 +51,7 @@ describe('TicketService', () => {
     const adultsOnly = [new TicketTypeRequest(ticketTypeNames.ADULT, 22)];
     const adultsAndChildren = [
       new TicketTypeRequest(ticketTypeNames.ADULT, 10),
-      new TicketTypeRequest(ticketTypeNames.CHILD, 20),
+      new TicketTypeRequest(ticketTypeNames.CHILD, 15),
     ];
     const adultsAndInfants = [
       new TicketTypeRequest(ticketTypeNames.ADULT, 11),

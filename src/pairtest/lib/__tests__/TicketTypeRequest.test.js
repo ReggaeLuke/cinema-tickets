@@ -1,4 +1,4 @@
-import { ADULT_PRICE } from '../../../../env';
+import { ADULT_PRICE, CHILD_PRICE, INFANT_PRICE } from '../../../../env';
 import ticketTypeNames from '../../consts/ticketTypeNames';
 import TicketTypeRequest from '../TicketTypeRequest.js';
 
@@ -57,31 +57,43 @@ describe('TicketTypeRequest', () => {
   });
 
   describe('getTicketType', () => {
-    it('should return the ticket type', () => {
+    it.each([
+      [ticketTypeNames.ADULT],
+      [ticketTypeNames.CHILD],
+      [ticketTypeNames.INFANT],
+    ])('should return the ticket type', (ticketType) => {
       const ticketTypeRequest = new TicketTypeRequest(
-        ticketTypeNames.ADULT,
+        ticketType,
         numberOfTickets
       );
 
-      expect(ticketTypeRequest.getTicketType()).toBe(ticketTypeNames.ADULT);
+      expect(ticketTypeRequest.getTicketType()).toBe(ticketType);
     });
   });
 
   describe('getPrice', () => {
-    it('should return the price', () => {
+    it.each([
+      [ticketTypeNames.ADULT, ADULT_PRICE],
+      [ticketTypeNames.CHILD, CHILD_PRICE],
+      [ticketTypeNames.INFANT, INFANT_PRICE],
+    ])('should return the price', (ticketType, ticketPrice) => {
       const ticketTypeRequest = new TicketTypeRequest(
-        ticketTypeNames.ADULT,
+        ticketType,
         numberOfTickets
       );
 
-      expect(ticketTypeRequest.getPrice()).toBe(ADULT_PRICE);
+      expect(ticketTypeRequest.getPrice()).toBe(ticketPrice);
     });
   });
 
   describe('getTotalPrice', () => {
-    it('should return the total price', () => {
+    it.each([
+      [ticketTypeNames.ADULT],
+      [ticketTypeNames.CHILD],
+      [ticketTypeNames.INFANT],
+    ])('should return the total price', (ticketType) => {
       const ticketTypeRequest = new TicketTypeRequest(
-        ticketTypeNames.ADULT,
+        ticketType,
         numberOfTickets
       );
 
